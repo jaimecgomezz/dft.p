@@ -1,0 +1,20 @@
+[package]
+name = "dftp"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "dft instructions parser."
+repository = "https://github.com/jaimecgomezz/dftip"
+homepage = "https://github.com/jaimecgomezz/dftip"
+
+[lib]
+name = "dftp_lib"
+path = "src/lib/lib.rs"
+
+[[bin]]
+name = "dftp"
+path = "src/bin.rs"
+
+[dependencies]
+structopt = "0.3.25"
+nom = "7.1.0"
