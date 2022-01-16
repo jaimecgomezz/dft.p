@@ -1,3 +1,6 @@
+use nom::error::VerboseError;
+use nom::IResult;
+
 pub type Program = Vec<Statement>;
 
 pub struct Statement {
@@ -10,6 +13,7 @@ pub struct DirectiveComponent {
     pub fields: FieldList,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Directive {
     SET,
     ADD,
@@ -34,6 +38,7 @@ pub struct ConnectorComponent {
     pub target: TargetComponent,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Connector {
     OR,
     TO,
@@ -58,6 +63,7 @@ pub enum DataValue {
     INTEGER(isize),
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum DataType {
     FLOAT,
     STRING,
@@ -65,6 +71,7 @@ pub enum DataType {
     BOOLEAN,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Format {
     URI,
     UUID,
@@ -74,12 +81,14 @@ pub enum Format {
     DATETIME,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Action {
     HALT,
     NOTIFY,
     DISCARD,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Expression {
     EQUALS,
     LESSER,
@@ -88,3 +97,5 @@ pub enum Expression {
     EQLESSER,
     EQGREATER,
 }
+
+pub type VResult<I, O> = IResult<I, O, VerboseError<I>>;
