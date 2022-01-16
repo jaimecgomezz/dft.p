@@ -16,5 +16,4 @@ name = "dftp"
 path = "src/bin.rs"
 
 [dependencies]
-structopt = "0.3.25"
 nom = "7.1.0"
