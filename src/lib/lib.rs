@@ -1,3 +1,2 @@
-pub fn test() {
-    println!("Hello from library!");
-}
+#[allow(dead_code)]
+mod types;

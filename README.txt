@@ -1,4 +1,4 @@
-dftp
+dft.p
 --------------------------------------------------------------------------------
 dft instructions file parser
 
@@ -20,86 +20,88 @@ while working in the dft project I realized 2 things:
 
 grammar (BNF)
 --------------------------------------------------------------------------------
-<program>               :=  <statement-list>
-                        ;
+<program>                     :=  <statement>
+                              |   <program> <statement>
+                              ;
 
-<statement-list>        :=  <statement>
-                        |   <statement-list> <statement>
-                        ;
+<statement>                   :=  <directive-component>
+                                    <connector-component-list> ;
+                              ;
 
-<statement>             :=  <directive-component> <connector-list> SEMICOLON
-                        ;
+<directive-component>         :=  <directive-literal> <field-list>
+                              ;
 
-<directive-component>   :=  <directive-literal> <field-list>
-                        ;
+<directive-literal>           :=  SET
+                              |   ADD
+                              |   ALIAS
+                              |   MERGE
+                              |   IGNORE
+                              |   RENAME
+                              |   FILTER
+                              |   COERCE
+                              |   DISTINCT
+                              |   VALIDATE
+                              ;
 
-<directive-literal>     :=  SET
-                        |   ADD
-                        |   ALIAS
-                        |   MERGE
-                        |   IGNORE
-                        |   RENAME
-                        |   FILTER
-                        |   COERCE
-                        |   DISTINCT
-                        |   VALIDATE
-                        ;
+<field-list>                  :=  <field>
+                              |   <field-list> , <field>
+                              ;
 
-<field-list>            :=  STRING_LITERAL
-                        |   <field-list> COMMA STRING_LITERAL
-                        ;
+<field>                       := String
+                              ;
 
-<connector-list>        :=  <connector-component>
-                        |   <connector-list> <connector-component>
-                        ;
+<connector-component-list>    :=  <connector-component>
+                              |   <connector-component-list>
+                                    <connector-component>
+                              ;
 
-<connector-component>   :=  <connector-literal> <target-component>
-                        ;
+<connector-component>         :=  <connector-literal> <target-component>
+                              ;
 
-<connector-literal>     :=  OR
-                        |   TO
-                        |   TYPED
-                        |   RESCUE
-                        |   DEFAULT
-                        |   MATCHING
-                        ;
+<connector-literal>           :=  OR
+                              |   TO
+                              |   TYPED
+                              |   RESCUE
+                              |   DEFAULT
+                              |   MATCHING
+                              ;
 
-<target-component>      :=  <value>
-                        |   <type-literal>
-                        |   <format-literal>
-                        |   <action-literal>
-                        |   <expression-literal>
-                        ;
+<target-component>            :=  <data-value>
+                              |   <data-type-literal>
+                              |   <format-literal>
+                              |   <action-literal>
+                              |   <expression-literal>
+                              ;
 
-<value>                 :=  FLOAT_LITERAL,
-                        |   STRING_LITERAL
-                        |   BOOLEAN_LITERAL
-                        |   INTEGER_LITERAL
-                        ;
+<data-value>                  :=  f64
+                              |   String
+                              |   bool
+                              |   isize
+                              ;
 
-<type-literal>          :=  FLOAT
-                        |   STRING
-                        |   INTEGER
-                        |   BOOLEAN
-                        ;
+<data-type-literal>           :=  FLOAT
+                              |   STRING
+                              |   INTEGER
+                              |   BOOLEAN
+                              ;
 
-<format-literal>        :=  URI
-                        |   UUID
-                        |   DATE
-                        |   TIME
-                        |   EMAIL
-                        |   DATETIME
-                        ;
+<format-literal>              :=  URI
+                              |   UUID
+                              |   DATE
+                              |   TIME
+                              |   EMAIL
+                              |   DATETIME
+                              ;
 
-<action-literal>        :=  HALT
-                        |   NOTIFY
-                        |   DISCARD
-                        ;
+<action-literal>              :=  HALT
+                              |   NOTIFY
+                              |   DISCARD
+                              ;
 
-<expression-literal>    :=  EQUALS
-                        |   LESSER
-                        |   DIFFERS
-                        |   GREATER
-                        |   EQLESSER
-                        |   EQGREATER
-                        ;
+<expression-literal>          :=  EQUALS
+                              |   LESSER
+                              |   DIFFERS
+                              |   GREATER
+                              |   EQLESSER
+                              |   EQGREATER
+                              ;
