@@ -5,8 +5,8 @@ use nom::bytes::complete::tag_no_case;
 use nom::combinator::map;
 use nom::combinator::value;
 
-use crate::types::*;
-use types::{boolean, float, integer, text};
+use super::types::*;
+use types::*;
 
 pub fn data_value(input: &str) -> VResult<&str, DataValue> {
     alt((
@@ -88,14 +88,11 @@ mod tests {
 
     #[test]
     fn data_value_test() {
-        assert_eq!(
-            data_value("text"),
-            Ok(("", DataValue::Text("text".to_string())))
-        );
         assert_eq!(data_value("1"), Ok(("", DataValue::Integer(1))));
         assert_eq!(data_value("1.0"), Ok(("", DataValue::Float(1.0))));
         assert_eq!(data_value("-1.0"), Ok(("", DataValue::Float(-1.0))));
         assert_eq!(data_value("true"), Ok(("", DataValue::Boolean(true))));
         assert_eq!(data_value("false"), Ok(("", DataValue::Boolean(false))));
+        assert_eq!(data_value("a"), Ok(("", DataValue::Text("a".to_string()))));
     }
 }
