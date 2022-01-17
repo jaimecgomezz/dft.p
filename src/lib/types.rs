@@ -56,12 +56,18 @@ pub enum TargetComponent {
     Expression(Expression),
 }
 
+#[derive(Debug, PartialEq)]
 pub enum DataValue {
-    FLOAT(f64),
-    STRING(String),
-    BOOLEAN(bool),
-    INTEGER(isize),
+    Float(Float),
+    Text(Text),
+    Boolean(Boolean),
+    Integer(Integer),
 }
+
+pub type Float = f64;
+pub type Text = String;
+pub type Boolean = bool;
+pub type Integer = isize;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum DataType {
