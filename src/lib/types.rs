@@ -13,7 +13,7 @@ pub struct DirectiveComponent {
     pub fields: FieldList,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Directive {
     SET,
     ADD,
@@ -38,7 +38,7 @@ pub struct ConnectorComponent {
     pub target: TargetComponent,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Connector {
     OR,
     TO,
@@ -69,7 +69,7 @@ pub type Text = String;
 pub type Boolean = bool;
 pub type Integer = isize;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum DataType {
     FLOAT,
     STRING,
@@ -77,7 +77,7 @@ pub enum DataType {
     BOOLEAN,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Format {
     URI,
     UUID,
@@ -87,14 +87,14 @@ pub enum Format {
     DATETIME,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Action {
     HALT,
     NOTIFY,
     DISCARD,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Expression {
     EQUALS,
     LESSER,
