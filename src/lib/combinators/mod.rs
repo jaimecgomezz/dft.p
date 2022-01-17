@@ -8,23 +8,12 @@ use crate::types::{Boolean, DataValue, Float, Integer, Text, VResult};
 use types::*;
 
 pub fn data_value(input: &str) -> VResult<&str, DataValue> {
-    alt((float_value, integer_value, boolean_value, text_value))(input)
-}
-
-fn text_value(input: &str) -> VResult<&str, DataValue> {
-    map(text, |result: Text| DataValue::Text(result))(input)
-}
-
-fn boolean_value(input: &str) -> VResult<&str, DataValue> {
-    map(boolean, |result: Boolean| DataValue::Boolean(result))(input)
-}
-
-fn float_value(input: &str) -> VResult<&str, DataValue> {
-    map(float, |result: Float| DataValue::Float(result))(input)
-}
-
-fn integer_value(input: &str) -> VResult<&str, DataValue> {
-    map(integer, |result: Integer| DataValue::Integer(result))(input)
+    alt((
+        map(float, |result: Float| DataValue::Float(result)),
+        map(integer, |result: Integer| DataValue::Integer(result)),
+        map(boolean, |result: Boolean| DataValue::Boolean(result)),
+        map(text, |result: Text| DataValue::Text(result)),
+    ))(input)
 }
 
 #[cfg(test)]
