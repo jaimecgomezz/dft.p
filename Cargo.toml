@@ -3,9 +3,12 @@ name = "dftp"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-description = "dft instructions parser."
+description = "dft instructions parser"
 repository = "https://github.com/jaimecgomezz/dft.p"
 homepage = "https://github.com/jaimecgomezz/dft.p"
+readme = "README.txt"
+keywords = ["parser", "dft"]
+categories = ["parsing"]
 
 [dependencies]
 nom = "7.1.0"
