@@ -14,6 +14,16 @@ use types::*;
 // TODO:
 //  - create a `list` combinator to unify *_list combinators
 
+pub fn directive_component(input: &str) -> VResult<&str, DirectiveComponent> {
+    map(
+        pair(directive, preceded(space1, field_list)),
+        |(dir, flist): (Directive, FieldList)| DirectiveComponent {
+            directive: dir,
+            fields: flist,
+        },
+    )(input)
+}
+
 pub fn connector_component_list(input: &str) -> VResult<&str, ConnectorComponentList> {
     map(
         pair(
@@ -154,6 +164,41 @@ pub fn expression(input: &str) -> VResult<&str, Expression> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn directive_component_test() {
+        assert!(directive_component("SET ").is_err());
+        assert_eq!(
+            directive_component("SET fa"),
+            Ok((
+                "",
+                DirectiveComponent {
+                    directive: Directive::SET,
+                    fields: vec!["fa".to_string()]
+                }
+            ))
+        );
+        assert_eq!(
+            directive_component("SET  \t\t\t  fa"),
+            Ok((
+                "",
+                DirectiveComponent {
+                    directive: Directive::SET,
+                    fields: vec!["fa".to_string()]
+                }
+            ))
+        );
+        assert_eq!(
+            directive_component("SET fa,fb"),
+            Ok((
+                "",
+                DirectiveComponent {
+                    directive: Directive::SET,
+                    fields: vec!["fa".to_string(), "fb".to_string()]
+                }
+            ))
+        )
+    }
 
     #[test]
     fn connector_component_list_test() {

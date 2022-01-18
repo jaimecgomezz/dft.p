@@ -8,6 +8,7 @@ pub struct Statement {
     pub connector_components: ConnectorComponentList,
 }
 
+#[derive(Debug, PartialEq)]
 pub struct DirectiveComponent {
     pub directive: Directive,
     pub fields: FieldList,
