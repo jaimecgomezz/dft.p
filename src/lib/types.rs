@@ -48,6 +48,7 @@ pub enum Connector {
     MATCHING,
 }
 
+#[derive(Debug, PartialEq)]
 pub enum TargetComponent {
     DataValue(DataValue),
     DataType(DataType),

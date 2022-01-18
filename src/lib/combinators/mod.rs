@@ -8,6 +8,22 @@ use nom::combinator::value;
 use super::types::*;
 use types::*;
 
+pub fn target_component(input: &str) -> VResult<&str, TargetComponent> {
+    alt((
+        map(format, |result: Format| TargetComponent::Format(result)),
+        map(action, |result: Action| TargetComponent::Action(result)),
+        map(expression, |result: Expression| {
+            TargetComponent::Expression(result)
+        }),
+        map(data_type, |result: DataType| {
+            TargetComponent::DataType(result)
+        }),
+        map(data_value, |result: DataValue| {
+            TargetComponent::DataValue(result)
+        }),
+    ))(input)
+}
+
 pub fn data_value(input: &str) -> VResult<&str, DataValue> {
     alt((
         map(float, |result: Float| DataValue::Float(result)),
@@ -85,6 +101,30 @@ pub fn expression(input: &str) -> VResult<&str, Expression> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn target_component_test() {
+        assert_eq!(
+            target_component("UUID"),
+            Ok(("", TargetComponent::Format(Format::UUID)))
+        );
+        assert_eq!(
+            target_component("HALT"),
+            Ok(("", TargetComponent::Action(Action::HALT)))
+        );
+        assert_eq!(
+            target_component("EQUALS"),
+            Ok(("", TargetComponent::Expression(Expression::EQUALS)))
+        );
+        assert_eq!(
+            target_component("BOOLEAN"),
+            Ok(("", TargetComponent::DataType(DataType::BOOLEAN)))
+        );
+        assert_eq!(
+            target_component("1.0"),
+            Ok(("", TargetComponent::DataValue(DataValue::Float(1.0))))
+        );
+    }
 
     #[test]
     fn data_value_test() {
