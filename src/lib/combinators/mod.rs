@@ -1,14 +1,30 @@
 mod types;
 
 use nom::branch::alt;
-use nom::bytes::complete::tag_no_case;
+use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::space1;
 use nom::combinator::map;
 use nom::combinator::value;
+use nom::multi::many0;
 use nom::sequence::{pair, preceded};
 
 use super::types::*;
 use types::*;
+
+pub fn field_list(input: &str) -> VResult<&str, FieldList> {
+    map(
+        pair(field, many0(preceded(tag(","), field))),
+        |(first, rest): (Field, Vec<Field>)| {
+            let mut result = vec![first];
+
+            for item in rest {
+                result.push(item);
+            }
+
+            return result;
+        },
+    )(input)
+}
 
 pub fn field(input: &str) -> VResult<&str, Field> {
     map(textchars1, |result: &str| result.into())(input)
@@ -117,6 +133,17 @@ pub fn expression(input: &str) -> VResult<&str, Expression> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn field_list_test() {
+        assert_eq!(field_list("fa"), Ok(("", vec!["fa".to_string()])));
+        assert_eq!(
+            field_list("fa,fb"),
+            Ok(("", vec!["fa".to_string(), "fb".to_string()]))
+        );
+        assert_eq!(field_list("fa ,fb"), Ok((" ,fb", vec!["fa".to_string()])));
+        assert_eq!(field_list("fa, fb"), Ok((", fb", vec!["fa".to_string()])));
+    }
 
     #[test]
     fn field_test() {
