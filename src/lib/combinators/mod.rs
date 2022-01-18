@@ -11,6 +11,27 @@ use nom::sequence::{pair, preceded};
 use super::types::*;
 use types::*;
 
+// TODO:
+//  - create a `list` combinator to unify *_list combinators
+
+pub fn connector_component_list(input: &str) -> VResult<&str, ConnectorComponentList> {
+    map(
+        pair(
+            connector_component,
+            many0(preceded(space1, connector_component)),
+        ),
+        |(first, rest): (ConnectorComponent, Vec<ConnectorComponent>)| {
+            let mut result = vec![first];
+
+            for item in rest {
+                result.push(item);
+            }
+
+            return result;
+        },
+    )(input)
+}
+
 pub fn field_list(input: &str) -> VResult<&str, FieldList> {
     map(
         pair(field, many0(preceded(tag(","), field))),
@@ -133,6 +154,62 @@ pub fn expression(input: &str) -> VResult<&str, Expression> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn connector_component_list_test() {
+        assert_eq!(
+            connector_component_list("MATCHING true"),
+            Ok((
+                "",
+                vec![ConnectorComponent {
+                    connector: Connector::MATCHING,
+                    target: TargetComponent::DataValue(DataValue::Boolean(true))
+                }]
+            ))
+        );
+        assert_eq!(
+            connector_component_list("MATCHING true MATCHING false"),
+            Ok((
+                "",
+                vec![
+                    ConnectorComponent {
+                        connector: Connector::MATCHING,
+                        target: TargetComponent::DataValue(DataValue::Boolean(true))
+                    },
+                    ConnectorComponent {
+                        connector: Connector::MATCHING,
+                        target: TargetComponent::DataValue(DataValue::Boolean(false))
+                    }
+                ]
+            ))
+        );
+        assert_eq!(
+            connector_component_list("MATCHING true \t\t\t  MATCHING false"),
+            Ok((
+                "",
+                vec![
+                    ConnectorComponent {
+                        connector: Connector::MATCHING,
+                        target: TargetComponent::DataValue(DataValue::Boolean(true))
+                    },
+                    ConnectorComponent {
+                        connector: Connector::MATCHING,
+                        target: TargetComponent::DataValue(DataValue::Boolean(false))
+                    }
+                ]
+            ))
+        );
+        assert_eq!(
+            connector_component_list("MATCHING true,MATCHING false"),
+            Ok((
+                ",MATCHING false",
+                vec![ConnectorComponent {
+                    connector: Connector::MATCHING,
+                    target: TargetComponent::DataValue(DataValue::Boolean(true))
+                }]
+            ))
+        );
+    }
 
     #[test]
     fn field_list_test() {
