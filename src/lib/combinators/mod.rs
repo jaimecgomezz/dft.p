@@ -2,17 +2,33 @@ mod types;
 
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
-use nom::character::complete::space1;
+use nom::character::complete::{char, newline, space1};
 use nom::combinator::map;
 use nom::combinator::value;
 use nom::multi::many0;
-use nom::sequence::{pair, preceded};
+use nom::sequence::{pair, preceded, terminated};
 
 use super::types::*;
 use types::*;
 
 // TODO:
 //  - create a `list` combinator to unify *_list combinators
+
+pub fn statement(input: &str) -> VResult<&str, Statement> {
+    map(
+        terminated(
+            pair(
+                directive_component,
+                preceded(space1, connector_component_list),
+            ),
+            alt((char(';'), newline)),
+        ),
+        |(dcomp, clist): (DirectiveComponent, ConnectorComponentList)| Statement {
+            directive_component: dcomp,
+            connector_components: clist,
+        },
+    )(input)
+}
 
 pub fn directive_component(input: &str) -> VResult<&str, DirectiveComponent> {
     map(
@@ -164,6 +180,58 @@ pub fn expression(input: &str) -> VResult<&str, Expression> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn statement_test() {
+        assert_eq!(
+            statement("SET fa TO true;"),
+            Ok((
+                "",
+                Statement {
+                    directive_component: DirectiveComponent {
+                        directive: Directive::SET,
+                        fields: vec!["fa".to_string()]
+                    },
+                    connector_components: vec![ConnectorComponent {
+                        connector: Connector::TO,
+                        target: TargetComponent::DataValue(DataValue::Boolean(true))
+                    }]
+                }
+            ))
+        );
+        assert_eq!(
+            statement("SET fa TO true\n"),
+            Ok((
+                "",
+                Statement {
+                    directive_component: DirectiveComponent {
+                        directive: Directive::SET,
+                        fields: vec!["fa".to_string()]
+                    },
+                    connector_components: vec![ConnectorComponent {
+                        connector: Connector::TO,
+                        target: TargetComponent::DataValue(DataValue::Boolean(true))
+                    }]
+                }
+            ))
+        );
+        assert_eq!(
+            statement("SET fa  \t\t\t  TO true;"),
+            Ok((
+                "",
+                Statement {
+                    directive_component: DirectiveComponent {
+                        directive: Directive::SET,
+                        fields: vec!["fa".to_string()]
+                    },
+                    connector_components: vec![ConnectorComponent {
+                        connector: Connector::TO,
+                        target: TargetComponent::DataValue(DataValue::Boolean(true))
+                    }]
+                }
+            ))
+        );
+    }
 
     #[test]
     fn directive_component_test() {

@@ -3,6 +3,7 @@ use nom::IResult;
 
 pub type Program = Vec<Statement>;
 
+#[derive(Debug, PartialEq)]
 pub struct Statement {
     pub directive_component: DirectiveComponent,
     pub connector_components: ConnectorComponentList,
