@@ -105,3 +105,9 @@ grammar (BNF)
                               |   EQLESSER
                               |   EQGREATER
                               ;
+
+
+TODO
+--------------------------------------------------------------------------------
+[] Improve combinators that return lists
+[] Improve error verbosity

@@ -11,9 +11,6 @@ use nom::sequence::{pair, preceded, terminated};
 use super::types::*;
 use types::*;
 
-// TODO:
-//  - create a `list` combinator to unify *_list combinators
-
 pub fn program(input: &str) -> VResult<&str, Program> {
     map(
         pair(statement, many0(preceded(multispace0, statement))),
