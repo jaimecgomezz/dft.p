@@ -1,4 +1,4 @@
-mod types;
+pub mod types;
 
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
