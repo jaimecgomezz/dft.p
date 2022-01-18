@@ -53,7 +53,7 @@ pub fn integer(input: &str) -> VResult<&str, Integer> {
     })(input)
 }
 
-fn textchars1<T>(input: T) -> VResult<T, T>
+pub fn textchars1<T>(input: T) -> VResult<T, T>
 where
     T: InputTakeAtPosition,
     <T as InputTakeAtPosition>::Item: AsChar,

@@ -10,6 +10,10 @@ use nom::sequence::{pair, preceded};
 use super::types::*;
 use types::*;
 
+pub fn field(input: &str) -> VResult<&str, Field> {
+    map(textchars1, |result: &str| result.into())(input)
+}
+
 pub fn connector_component(input: &str) -> VResult<&str, ConnectorComponent> {
     map(
         pair(connector, preceded(space1, target_component)),
@@ -113,6 +117,14 @@ pub fn expression(input: &str) -> VResult<&str, Expression> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn field_test() {
+        assert!(field("").is_err());
+        assert_eq!(field("fiel?"), Ok(("?", "fiel".to_string())));
+        assert_eq!(field("field"), Ok(("", "field".to_string())));
+        assert_eq!(field("nested.field"), Ok(("", "nested.field".to_string())));
+    }
 
     #[test]
     fn connector_component_test() {
