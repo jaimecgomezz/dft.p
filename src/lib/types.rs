@@ -33,6 +33,7 @@ pub type Field = String;
 
 pub type ConnectorComponentList = Vec<ConnectorComponent>;
 
+#[derive(Debug, PartialEq)]
 pub struct ConnectorComponent {
     pub connector: Connector,
     pub target: TargetComponent,

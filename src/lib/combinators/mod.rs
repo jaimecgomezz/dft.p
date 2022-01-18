@@ -2,11 +2,23 @@ mod types;
 
 use nom::branch::alt;
 use nom::bytes::complete::tag_no_case;
+use nom::character::complete::space1;
 use nom::combinator::map;
 use nom::combinator::value;
+use nom::sequence::{pair, preceded};
 
 use super::types::*;
 use types::*;
+
+pub fn connector_component(input: &str) -> VResult<&str, ConnectorComponent> {
+    map(
+        pair(connector, preceded(space1, target_component)),
+        |(con, tar): (Connector, TargetComponent)| ConnectorComponent {
+            connector: con,
+            target: tar,
+        },
+    )(input)
+}
 
 pub fn target_component(input: &str) -> VResult<&str, TargetComponent> {
     alt((
@@ -101,6 +113,41 @@ pub fn expression(input: &str) -> VResult<&str, Expression> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn connector_component_test() {
+        assert!(connector_component("MATCHING\ntrue").is_err());
+        assert_eq!(
+            connector_component("MATCHING true"),
+            Ok((
+                "",
+                ConnectorComponent {
+                    connector: Connector::MATCHING,
+                    target: TargetComponent::DataValue(DataValue::Boolean(true))
+                }
+            ))
+        );
+        assert_eq!(
+            connector_component("MATCHING     true"),
+            Ok((
+                "",
+                ConnectorComponent {
+                    connector: Connector::MATCHING,
+                    target: TargetComponent::DataValue(DataValue::Boolean(true))
+                }
+            ))
+        );
+        assert_eq!(
+            connector_component("MATCHING    \t\t\t   true"),
+            Ok((
+                "",
+                ConnectorComponent {
+                    connector: Connector::MATCHING,
+                    target: TargetComponent::DataValue(DataValue::Boolean(true))
+                }
+            ))
+        );
+    }
 
     #[test]
     fn target_component_test() {
