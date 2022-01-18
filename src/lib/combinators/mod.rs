@@ -2,7 +2,7 @@ mod types;
 
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
-use nom::character::complete::{char, newline, space1};
+use nom::character::complete::{char, multispace0, space1};
 use nom::combinator::map;
 use nom::combinator::value;
 use nom::multi::many0;
@@ -14,6 +14,21 @@ use types::*;
 // TODO:
 //  - create a `list` combinator to unify *_list combinators
 
+pub fn program(input: &str) -> VResult<&str, Program> {
+    map(
+        pair(statement, many0(preceded(multispace0, statement))),
+        |(first, rest): (Statement, Program)| {
+            let mut result = vec![first];
+
+            for item in rest {
+                result.push(item);
+            }
+
+            return result;
+        },
+    )(input)
+}
+
 pub fn statement(input: &str) -> VResult<&str, Statement> {
     map(
         terminated(
@@ -21,7 +36,7 @@ pub fn statement(input: &str) -> VResult<&str, Statement> {
                 directive_component,
                 preceded(space1, connector_component_list),
             ),
-            alt((char(';'), newline)),
+            char(';'),
         ),
         |(dcomp, clist): (DirectiveComponent, ConnectorComponentList)| Statement {
             directive_component: dcomp,
@@ -46,7 +61,7 @@ pub fn connector_component_list(input: &str) -> VResult<&str, ConnectorComponent
             connector_component,
             many0(preceded(space1, connector_component)),
         ),
-        |(first, rest): (ConnectorComponent, Vec<ConnectorComponent>)| {
+        |(first, rest): (ConnectorComponent, ConnectorComponentList)| {
             let mut result = vec![first];
 
             for item in rest {
@@ -61,7 +76,7 @@ pub fn connector_component_list(input: &str) -> VResult<&str, ConnectorComponent
 pub fn field_list(input: &str) -> VResult<&str, FieldList> {
     map(
         pair(field, many0(preceded(tag(","), field))),
-        |(first, rest): (Field, Vec<Field>)| {
+        |(first, rest): (Field, FieldList)| {
             let mut result = vec![first];
 
             for item in rest {
@@ -182,6 +197,85 @@ mod tests {
     use super::*;
 
     #[test]
+    fn program_test() {
+        assert_eq!(
+            program("SET fa TO true;"),
+            Ok((
+                "",
+                vec![Statement {
+                    directive_component: DirectiveComponent {
+                        directive: Directive::SET,
+                        fields: vec!["fa".to_string()]
+                    },
+                    connector_components: vec![ConnectorComponent {
+                        connector: Connector::TO,
+                        target: TargetComponent::DataValue(DataValue::Boolean(true))
+                    }]
+                }]
+            ))
+        );
+        assert_eq!(
+            program("SET fa TO true; SET fb TO false;"),
+            Ok((
+                "",
+                vec![
+                    Statement {
+                        directive_component: DirectiveComponent {
+                            directive: Directive::SET,
+                            fields: vec!["fa".to_string()]
+                        },
+                        connector_components: vec![ConnectorComponent {
+                            connector: Connector::TO,
+                            target: TargetComponent::DataValue(DataValue::Boolean(true))
+                        },]
+                    },
+                    Statement {
+                        directive_component: DirectiveComponent {
+                            directive: Directive::SET,
+                            fields: vec!["fb".to_string()]
+                        },
+                        connector_components: vec![ConnectorComponent {
+                            connector: Connector::TO,
+                            target: TargetComponent::DataValue(DataValue::Boolean(false))
+                        },]
+                    }
+                ]
+            ))
+        );
+        assert_eq!(
+            program(
+                "SET fa TO true;
+                 SET fb TO false;"
+            ),
+            Ok((
+                "",
+                vec![
+                    Statement {
+                        directive_component: DirectiveComponent {
+                            directive: Directive::SET,
+                            fields: vec!["fa".to_string()]
+                        },
+                        connector_components: vec![ConnectorComponent {
+                            connector: Connector::TO,
+                            target: TargetComponent::DataValue(DataValue::Boolean(true))
+                        },]
+                    },
+                    Statement {
+                        directive_component: DirectiveComponent {
+                            directive: Directive::SET,
+                            fields: vec!["fb".to_string()]
+                        },
+                        connector_components: vec![ConnectorComponent {
+                            connector: Connector::TO,
+                            target: TargetComponent::DataValue(DataValue::Boolean(false))
+                        },]
+                    }
+                ]
+            ))
+        );
+    }
+
+    #[test]
     fn statement_test() {
         assert_eq!(
             statement("SET fa TO true;"),
@@ -200,7 +294,7 @@ mod tests {
             ))
         );
         assert_eq!(
-            statement("SET fa TO true\n"),
+            statement("SET fa TO true;"),
             Ok((
                 "",
                 Statement {
