@@ -2,7 +2,7 @@ pub mod types;
 
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
-use nom::character::complete::{char, multispace0, space1};
+use nom::character::complete::{char, multispace0, space0, space1};
 use nom::combinator::map;
 use nom::combinator::value;
 use nom::multi::many0;
@@ -21,7 +21,7 @@ pub fn program(input: &str) -> VResult<&str, Program> {
                 result.push(item);
             }
 
-            return result;
+            result
         },
     )(input)
 }
@@ -33,7 +33,7 @@ pub fn statement(input: &str) -> VResult<&str, Statement> {
                 directive_component,
                 preceded(space1, connector_component_list),
             ),
-            char(';'),
+            preceded(space0, char(';')),
         ),
         |(dcomp, clist): (DirectiveComponent, ConnectorComponentList)| Statement {
             directive_component: dcomp,
@@ -65,14 +65,14 @@ pub fn connector_component_list(input: &str) -> VResult<&str, ConnectorComponent
                 result.push(item);
             }
 
-            return result;
+            result
         },
     )(input)
 }
 
 pub fn field_list(input: &str) -> VResult<&str, FieldList> {
     map(
-        pair(field, many0(preceded(tag(","), field))),
+        pair(field, many0(preceded(tag(","), preceded(space0, field)))),
         |(first, rest): (Field, FieldList)| {
             let mut result = vec![first];
 
@@ -80,13 +80,13 @@ pub fn field_list(input: &str) -> VResult<&str, FieldList> {
                 result.push(item);
             }
 
-            return result;
+            result
         },
     )(input)
 }
 
 pub fn field(input: &str) -> VResult<&str, Field> {
-    map(textchars1, |result: &str| result.into())(input)
+    map(textchars1, Field::from)(input)
 }
 
 pub fn connector_component(input: &str) -> VResult<&str, ConnectorComponent> {
@@ -101,26 +101,20 @@ pub fn connector_component(input: &str) -> VResult<&str, ConnectorComponent> {
 
 pub fn target_component(input: &str) -> VResult<&str, TargetComponent> {
     alt((
-        map(format, |result: Format| TargetComponent::Format(result)),
-        map(action, |result: Action| TargetComponent::Action(result)),
-        map(expression, |result: Expression| {
-            TargetComponent::Expression(result)
-        }),
-        map(data_type, |result: DataType| {
-            TargetComponent::DataType(result)
-        }),
-        map(data_value, |result: DataValue| {
-            TargetComponent::DataValue(result)
-        }),
+        map(format, TargetComponent::Format),
+        map(action, TargetComponent::Action),
+        map(expression, TargetComponent::Expression),
+        map(data_type, TargetComponent::DataType),
+        map(data_value, TargetComponent::DataValue),
     ))(input)
 }
 
 pub fn data_value(input: &str) -> VResult<&str, DataValue> {
     alt((
-        map(float, |result: Float| DataValue::Float(result)),
-        map(integer, |result: Integer| DataValue::Integer(result)),
-        map(boolean, |result: Boolean| DataValue::Boolean(result)),
-        map(text, |result: Text| DataValue::Text(result)),
+        map(float, DataValue::Float),
+        map(integer, DataValue::Integer),
+        map(boolean, DataValue::Boolean),
+        map(text, DataValue::Text),
     ))(input)
 }
 

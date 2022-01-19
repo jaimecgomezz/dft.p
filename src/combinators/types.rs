@@ -11,7 +11,7 @@ use nom::{AsChar, InputTakeAtPosition};
 use crate::types::{Boolean, Float, Integer, Text, VResult};
 
 pub fn text(input: &str) -> VResult<&str, Text> {
-    map(textchars1, |result: &str| Text::from(result))(input)
+    map(textchars1, Text::from)(input)
 }
 
 pub fn boolean(input: &str) -> VResult<&str, Boolean> {

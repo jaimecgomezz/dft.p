@@ -21,6 +21,22 @@ fn program_test() {
         ))
     );
     assert_eq!(
+        program("SET fa TO true \t ;"),
+        Ok((
+            "",
+            vec![Statement {
+                directive_component: DirectiveComponent {
+                    directive: Directive::SET,
+                    fields: vec!["fa".to_string()]
+                },
+                connector_components: vec![ConnectorComponent {
+                    connector: Connector::TO,
+                    target: TargetComponent::DataValue(DataValue::Boolean(true))
+                }]
+            }]
+        ))
+    );
+    assert_eq!(
         program("SET fa TO true; SET fb TO false;"),
         Ok((
             "",
@@ -231,8 +247,11 @@ fn field_list_test() {
         field_list("fa,fb"),
         Ok(("", vec!["fa".to_string(), "fb".to_string()]))
     );
+    assert_eq!(
+        field_list("fa, fb"),
+        Ok(("", vec!["fa".to_string(), "fb".to_string()]))
+    );
     assert_eq!(field_list("fa ,fb"), Ok((" ,fb", vec!["fa".to_string()])));
-    assert_eq!(field_list("fa, fb"), Ok((", fb", vec!["fa".to_string()])));
 }
 
 #[test]
