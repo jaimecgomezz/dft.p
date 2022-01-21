@@ -11,7 +11,7 @@ fn program_test() {
             vec![Statement {
                 directive_component: DirectiveComponent {
                     directive: Directive::SET,
-                    fields: vec!["fa".to_string()]
+                    fields: vec!["fa"]
                 },
                 connector_components: vec![ConnectorComponent {
                     connector: Connector::TO,
@@ -27,7 +27,7 @@ fn program_test() {
             vec![Statement {
                 directive_component: DirectiveComponent {
                     directive: Directive::SET,
-                    fields: vec!["fa".to_string()]
+                    fields: vec!["fa"]
                 },
                 connector_components: vec![ConnectorComponent {
                     connector: Connector::TO,
@@ -44,7 +44,7 @@ fn program_test() {
                 Statement {
                     directive_component: DirectiveComponent {
                         directive: Directive::SET,
-                        fields: vec!["fa".to_string()]
+                        fields: vec!["fa"]
                     },
                     connector_components: vec![ConnectorComponent {
                         connector: Connector::TO,
@@ -54,7 +54,7 @@ fn program_test() {
                 Statement {
                     directive_component: DirectiveComponent {
                         directive: Directive::SET,
-                        fields: vec!["fb".to_string()]
+                        fields: vec!["fb"]
                     },
                     connector_components: vec![ConnectorComponent {
                         connector: Connector::TO,
@@ -75,7 +75,7 @@ fn program_test() {
                 Statement {
                     directive_component: DirectiveComponent {
                         directive: Directive::SET,
-                        fields: vec!["fa".to_string()]
+                        fields: vec!["fa"]
                     },
                     connector_components: vec![ConnectorComponent {
                         connector: Connector::TO,
@@ -85,7 +85,7 @@ fn program_test() {
                 Statement {
                     directive_component: DirectiveComponent {
                         directive: Directive::SET,
-                        fields: vec!["fb".to_string()]
+                        fields: vec!["fb"]
                     },
                     connector_components: vec![ConnectorComponent {
                         connector: Connector::TO,
@@ -106,7 +106,7 @@ fn statement_test() {
             Statement {
                 directive_component: DirectiveComponent {
                     directive: Directive::SET,
-                    fields: vec!["fa".to_string()]
+                    fields: vec!["fa"]
                 },
                 connector_components: vec![ConnectorComponent {
                     connector: Connector::TO,
@@ -122,7 +122,7 @@ fn statement_test() {
             Statement {
                 directive_component: DirectiveComponent {
                     directive: Directive::SET,
-                    fields: vec!["fa".to_string()]
+                    fields: vec!["fa"]
                 },
                 connector_components: vec![ConnectorComponent {
                     connector: Connector::TO,
@@ -138,7 +138,7 @@ fn statement_test() {
             Statement {
                 directive_component: DirectiveComponent {
                     directive: Directive::SET,
-                    fields: vec!["fa".to_string()]
+                    fields: vec!["fa"]
                 },
                 connector_components: vec![ConnectorComponent {
                     connector: Connector::TO,
@@ -158,7 +158,7 @@ fn directive_component_test() {
             "",
             DirectiveComponent {
                 directive: Directive::SET,
-                fields: vec!["fa".to_string()]
+                fields: vec!["fa"]
             }
         ))
     );
@@ -168,7 +168,7 @@ fn directive_component_test() {
             "",
             DirectiveComponent {
                 directive: Directive::SET,
-                fields: vec!["fa".to_string()]
+                fields: vec!["fa"]
             }
         ))
     );
@@ -178,7 +178,7 @@ fn directive_component_test() {
             "",
             DirectiveComponent {
                 directive: Directive::SET,
-                fields: vec!["fa".to_string(), "fb".to_string()]
+                fields: vec!["fa", "fb"]
             }
         ))
     )
@@ -242,24 +242,18 @@ fn connector_component_list_test() {
 
 #[test]
 fn field_list_test() {
-    assert_eq!(field_list("fa"), Ok(("", vec!["fa".to_string()])));
-    assert_eq!(
-        field_list("fa,fb"),
-        Ok(("", vec!["fa".to_string(), "fb".to_string()]))
-    );
-    assert_eq!(
-        field_list("fa, fb"),
-        Ok(("", vec!["fa".to_string(), "fb".to_string()]))
-    );
-    assert_eq!(field_list("fa ,fb"), Ok((" ,fb", vec!["fa".to_string()])));
+    assert_eq!(field_list("fa"), Ok(("", vec!["fa"])));
+    assert_eq!(field_list("fa,fb"), Ok(("", vec!["fa", "fb"])));
+    assert_eq!(field_list("fa, fb"), Ok(("", vec!["fa", "fb"])));
+    assert_eq!(field_list("fa ,fb"), Ok((" ,fb", vec!["fa"])));
 }
 
 #[test]
 fn field_test() {
     assert!(field("").is_err());
-    assert_eq!(field("fiel?"), Ok(("?", "fiel".to_string())));
-    assert_eq!(field("field"), Ok(("", "field".to_string())));
-    assert_eq!(field("nested.field"), Ok(("", "nested.field".to_string())));
+    assert_eq!(field("fiel?"), Ok(("?", "fiel")));
+    assert_eq!(field("field"), Ok(("", "field")));
+    assert_eq!(field("nested.field"), Ok(("", "nested.field")));
 }
 
 #[test]

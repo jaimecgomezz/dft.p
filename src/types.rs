@@ -1,18 +1,18 @@
 use nom::error::VerboseError;
 use nom::IResult;
 
-pub type Program = Vec<Statement>;
+pub type Program<'a> = Vec<Statement<'a>>;
 
 #[derive(Debug, PartialEq)]
-pub struct Statement {
-    pub directive_component: DirectiveComponent,
+pub struct Statement<'a> {
+    pub directive_component: DirectiveComponent<'a>,
     pub connector_components: ConnectorComponentList,
 }
 
 #[derive(Debug, PartialEq)]
-pub struct DirectiveComponent {
+pub struct DirectiveComponent<'a> {
     pub directive: Directive,
-    pub fields: FieldList,
+    pub fields: FieldList<'a>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -29,9 +29,9 @@ pub enum Directive {
     VALIDATE,
 }
 
-pub type FieldList = Vec<Field>;
+pub type FieldList<'a> = Vec<Field<'a>>;
 
-pub type Field = String;
+pub type Field<'a> = &'a str;
 
 pub type ConnectorComponentList = Vec<ConnectorComponent>;
 

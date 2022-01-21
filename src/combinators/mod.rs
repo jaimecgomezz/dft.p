@@ -86,7 +86,7 @@ pub fn field_list(input: &str) -> VResult<&str, FieldList> {
 }
 
 pub fn field(input: &str) -> VResult<&str, Field> {
-    map(textchars1, Field::from)(input)
+    textchars1(input)
 }
 
 pub fn connector_component(input: &str) -> VResult<&str, ConnectorComponent> {
