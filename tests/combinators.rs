@@ -4,8 +4,9 @@ use dftp::types::*;
 
 #[test]
 fn program_test() {
+    assert!(program("SET fa TO true;;").is_err());
     assert_eq!(
-        program("SET fa TO true;"),
+        program("SET fa TO true;    \n\t\r   "),
         Ok((
             "",
             vec![Statement {

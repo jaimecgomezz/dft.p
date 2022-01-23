@@ -3,8 +3,8 @@ pub mod types;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{char, multispace0, space0, space1};
-use nom::combinator::map;
 use nom::combinator::value;
+use nom::combinator::{all_consuming, map};
 use nom::multi::many0;
 use nom::sequence::{pair, preceded, terminated};
 
@@ -13,7 +13,10 @@ use types::*;
 
 pub fn program(input: &str) -> VResult<&str, Program> {
     map(
-        pair(statement, many0(preceded(multispace0, statement))),
+        all_consuming(terminated(
+            pair(statement, many0(preceded(multispace0, statement))),
+            multispace0,
+        )),
         |(first, rest): (Statement, Program)| {
             let mut result = vec![first];
 
